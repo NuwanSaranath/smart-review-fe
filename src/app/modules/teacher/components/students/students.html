@@ -1,5 +1,3 @@
-<!-- Tabs are outside this component. This is only the Students content. -->
-
 <!-- Toolbar -->
 <div class="toolbar">
   <div class="search">
@@ -8,7 +6,8 @@
       type="text"
       [(ngModel)]="q"
       name="q"
-      placeholder="Search students" />
+      placeholder="Search students"
+    />
   </div>
 
   <button class="btn primary" (click)="addStudent()">Add Student</button>
@@ -19,23 +18,84 @@
   <table class="table">
     <thead>
       <tr>
-        <th>Name</th>
-        <th>Average Marks</th>
-        <th>Completed Assignments</th>
-        <th>Total Assignments</th>
-        <th class="th-actions">Actions</th>
+        <th>Full Name</th>
+        <th>Email</th>
+        <th>Contact Number</th>
+        <th>User Name</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let s of filtered()">
-        <td>{{ s.name }}</td>
-        <td>{{ s.avg }}%</td>
-        <td>{{ s.completed }}</td>
-        <td>{{ s.total }}</td>
-        <td class="actions">
-          <a class="action-link" (click)="viewMore(s)">View More</a>
+        <td>{{ s.fullName }}</td>
+        <td>{{ s.email }}</td>
+        <td>{{ s.contactNumber }}</td>
+        <td>{{ s.userName }}</td>
+      </tr>
+      <tr *ngIf="filtered().length === 0">
+        <td colspan="4" class="text-center text-muted py-3">
+          No students found
         </td>
       </tr>
     </tbody>
   </table>
+</div>
+
+<!-- ✅ Add Student Modal -->
+<div
+  class="modal fade show d-block"
+  *ngIf="showModal"
+  tabindex="-1"
+  style="background-color: rgba(0,0,0,0.5);"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-3">
+      <div class="modal-header">
+        <h5 class="modal-title">Add Student</h5>
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Typeahead Search -->
+        <div class="mb-3 position-relative">
+          <label class="form-label fw-semibold">Search by Username</label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="searchTerm"
+            (input)="onSearchChange()"
+            placeholder="Enter username"
+          />
+
+          <!-- Suggestions -->
+          <ul
+            *ngIf="suggestions.length > 0"
+            class="list-group position-absolute w-100 mt-1 shadow-sm"
+            style="z-index: 1000;"
+          >
+            <li
+              *ngFor="let user of suggestions"
+              class="list-group-item list-group-item-action"
+              (click)="selectUser(user)"
+              style="cursor: pointer;"
+            >
+              {{ user.userName }} - {{ user.firstName }} {{ user.lastName }}
+            </li>
+          </ul>
+        </div>
+
+        <!-- Selected User Info -->
+        <div *ngIf="selectedUser" class="selected-user border rounded p-3 bg-light">
+          <p><strong>Full Name:</strong> {{ selectedUser.firstName }} {{ selectedUser.lastName }}</p>
+          <p><strong>Email:</strong> {{ selectedUser.email }}</p>
+          <p><strong>Contact:</strong> {{ selectedUser.mobileNumber }}</p>
+        </div>
+
+        <!-- Actions -->
+        <div class="d-flex justify-content-end mt-3">
+          <button class="btn btn-outline-secondary me-2" (click)="closeModal()">Cancel</button>
+          <button class="btn btn-primary" (click)="saveStudent()">Add</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

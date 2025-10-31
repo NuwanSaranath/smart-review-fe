@@ -53,3 +53,20 @@
   background-color: #f9fafb; /* light neutral page background */
   padding: 1rem 0;
 }
+.students-section {
+  width: 100%;
+  height: calc(100vh - 150px); /* Adjust based on your header/tab height */
+  background-color: #ffffff; /* clean white background */
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+
+  app-students {
+    flex: 1;
+    width: 100%;
+    display: block;
+  }
+}
+

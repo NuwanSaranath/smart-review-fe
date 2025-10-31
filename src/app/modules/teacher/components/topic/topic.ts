@@ -66,7 +66,6 @@ export class Topic {
             enabled: true
           }));
         }
-        this.loadTopics();
         console.log(' Topics loaded:', this.rows);
       },
       error: (err) => {

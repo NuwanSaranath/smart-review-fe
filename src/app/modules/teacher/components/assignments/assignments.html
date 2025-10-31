@@ -32,9 +32,7 @@
       </thead>
       <tbody>
         <tr *ngFor="let r of filtered()">
-          <td class="text-primary fw-medium">
-            {{ r.startDate || '—' }}
-          </td>
+          <td class="text-primary fw-medium">{{ r.startDate || '—' }}</td>
           <td>{{ r.title }}</td>
           <td class="text-primary">{{ r.topic }}</td>
           <td>{{ r.endDate || '—' }}</td>
@@ -43,12 +41,11 @@
             <span
               class="badge"
               [ngClass]="{
-                'bg-success': r.isMcq === true,
-                'bg-secondary': r.isMcq === false
+                'bg-success': r.isMcq,
+                'bg-secondary': !r.isMcq
               }"
+              >{{ r.isMcq ? 'Yes' : 'No' }}</span
             >
-              {{ r.isMcq ? 'Yes' : 'No' }}
-            </span>
           </td>
           <td>
             <a class="text-primary text-decoration-none fw-medium" href="#">
@@ -69,7 +66,6 @@
 </div>
 
 <!-- Add Assignment Modal -->
-<!-- Add Assignment Modal -->
 <div
   class="modal fade show d-block"
   *ngIf="showModal"
@@ -85,7 +81,6 @@
 
       <div class="modal-body">
         <form #assignmentForm="ngForm" (ngSubmit)="addAssignment(assignmentForm)">
-          
           <!-- Assignment Name -->
           <div class="mb-3">
             <label class="form-label fw-semibold">Assignment Name</label>
@@ -119,12 +114,7 @@
           <!-- Time Duration -->
           <div class="mb-3">
             <label class="form-label fw-semibold">Time Duration</label>
-            <select
-              class="form-select"
-              name="timeDuration"
-              required
-              ngModel
-            >
+            <select class="form-select" name="timeDuration" required ngModel>
               <option value="00:30:00">30 Minutes</option>
               <option value="01:00:00" selected>1 Hour</option>
               <option value="02:00:00">2 Hours</option>
@@ -132,76 +122,38 @@
             </select>
           </div>
 
-          <!-- Start Time -->
+          <!-- Start Date -->
           <div class="mb-3">
             <label class="form-label fw-semibold">Start Date</label>
-            <input
-              type="date"
-              name="startTime"
-              class="form-control"
-              required
-              ngModel
-            />
+            <input type="date" name="startTime" class="form-control" required ngModel />
           </div>
 
-          <!-- End Time -->
+          <!-- End Date -->
           <div class="mb-3">
             <label class="form-label fw-semibold">End Date</label>
-            <input
-              type="date"
-              name="endTime"
-              class="form-control"
-              required
-              ngModel
-            />
+            <input type="date" name="endTime" class="form-control" required ngModel />
           </div>
 
-          <!-- Is MCQ -->
+          <!-- Upload PDF -->
           <div class="mb-3">
-            <label class="form-label fw-semibold me-3">Is MCQ?</label>
-          
-            <div class="form-check form-check-inline">
-              <input
-                type="radio"
-                id="isMcqYes"
-                name="isMcq"
-                [value]="true"
-                class="form-check-input"
-                required
-                ngModel
-              />
-              <label class="form-check-label" for="isMcqYes">Yes</label>
-            </div>
-          
-            <div class="form-check form-check-inline">
-              <input
-                type="radio"
-                id="isMcqNo"
-                name="isMcq"
-                [value]="false"
-                class="form-check-input"
-                ngModel
-              />
-              <label class="form-check-label" for="isMcqNo">No</label>
+            <label class="form-label fw-semibold">Upload PDF (required)</label>
+            <input
+              type="file"
+              class="form-control"
+              (change)="onFileSelected($event)"
+              accept="application/pdf"
+              
+            />
+            <small class="text-muted">Supported: PDF, max 10MB</small>
+            <div *ngIf="selectedFileName" class="mt-2 text-success small">
+              📎 {{ selectedFileName }}
             </div>
           </div>
 
           <!-- Submit + Cancel -->
           <div class="d-flex justify-content-end mt-4">
-            <button
-              type="button"
-              class="btn btn-outline-secondary me-2"
-              (click)="closeModal()"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              class="btn btn-primary"
-              [disabled]="!assignmentForm.valid"
-            >
-              Add
-            </button>
+            <button type="button" class="btn btn-outline-secondary me-2" (click)="closeModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary" [disabled]="!assignmentForm.valid">Add</button>
           </div>
         </form>
       </div>

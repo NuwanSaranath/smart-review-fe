@@ -1,36 +1,87 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TeacherService } from '../../services/teacher.service';
+import { ActivatedRoute } from '@angular/router';
+import { ClassDataService } from '../../services/class-data/class-data';
+import { JwtService } from '../../../../core/service/jwt-service';
 
-interface Metric { label: string; value: string; }
-interface Row {
-  assignment: string;
-  topic: string;
-  due: string;
-  status: 'Published';
-  submissions: string; // "18/25"
+interface Metric {
+  label: string;
+  value: string;
+}
+
+interface UpcomingAssignment {
+  assignmentName: string;
+  topicTitle: string;
+  dueDate: string;
 }
 
 @Component({
   selector: 'app-overview',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './overview.html',
-  styleUrl: './overview.scss',
+  styleUrls: ['./overview.scss']
 })
-export class Overview {
- metrics: Metric[] = [
-    { label: 'Completion % (Today)', value: '76%' },
-    { label: 'Overdue Reviews',      value: '14' },
-    { label: 'Total Assignments',    value: '47' },
-    { label: 'Total Students',       value: '132' },
-  ];
+export class Overview implements OnInit {
+  metrics: Metric[] = [];
+  rows: UpcomingAssignment[] = [];
+  teacherId :number|null=null; 
 
-  rows: Row[] = [
-    { assignment:'Math Quiz 1',           topic:'Algebra',       due:'Today 11:59 PM',   status:'Published', submissions:'18/25' },
-    { assignment:'Science Project',       topic:'Biology',       due:'Tomorrow 1:00 PM', status:'Published', submissions:'22/28' },
-    { assignment:'History Essay',         topic:'World History', due:'Tue 10:00 AM',     status:'Published', submissions:'15/20' },
-    { assignment:'English Assignment',    topic:'Literature',    due:'Wed 2:00 PM',      status:'Published', submissions:'20/24' },
-    { assignment:'Physics Lab Report',    topic:'Physics',       due:'Thu 4:00 PM',      status:'Published', submissions:'17/22' },
-    { assignment:'Geography Presentation',topic:'Geography',     due:'Fri 11:59 PM',     status:'Published', submissions:'21/26' },
-    { assignment:'Art Project',           topic:'Visual Arts',   due:'Sat 1:00 PM',      status:'Published', submissions:'19/23' },
-  ];
+  showModal = false;
+  classId!: number;
+  classData: any;
+  title = '';
+  constructor(
+    private route: ActivatedRoute, 
+    private teacherService: TeacherService,
+    private classDataService: ClassDataService,
+       private jwtService: JwtService,
+  ) {
+
+  }
+  ngOnInit(): void {
+    this.classId = Number(this.route.snapshot.paramMap.get('id'));
+    this.teacherId = this.jwtService.getLogedUserId(); 
+    console.log(" this.classId", this.classId);
+    
+      this.classDataService.selectedClass$.subscribe(data => {
+      this.classData = data;
+      this.title=data.className;
+      console.log('Received class:', this.classData);
+    });
+    this.loadUpcomingAssignments();
+  }
+
+
+
+
+  /** ✅ Fetch Upcoming Assignments from Backend */
+  loadUpcomingAssignments(): void {
+    this.teacherService.getUpcomingAssignments(this.teacherId!, this.classId).subscribe({
+      next: (res: any) => {
+        if (res?.body) {
+          const data = res.body;
+
+          // ✅ Metrics (Total Students, Total Assignments)
+          this.metrics = [
+            { label: 'Total Students', value: String(data.totalStudent || 0) },
+            { label: 'Total Assignments', value: String(data.totalAssignment || 0) },
+          ];
+
+          // ✅ Upcoming Assignments (Next 7 Days)
+          this.rows = data.upcomingAssignmentDtoList?.map((a: any) => ({
+            assignmentName: a.assignmentName,
+            topicTitle: a.topicTitle,
+            dueDate: new Date(a.dueDate).toLocaleDateString(),
+          })) || [];
+        }
+        console.log('📊 Dashboard Loaded:', res.body);
+      },
+      error: (err) => {
+        console.error('❌ Error loading dashboard:', err);
+      },
+    });
+  }
+  
 }

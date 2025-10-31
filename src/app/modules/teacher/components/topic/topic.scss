@@ -72,3 +72,36 @@
 .btn-outline-secondary:hover {
   background-color: #f1f5f9;
 }
+:root { --ink:#111827; --muted:#6b7280; --line:#e5e7eb; --card:#ffffff; }
+
+:host { display:block; color:var(--ink); }
+
+/* Toolbar */
+.toolbar { display:flex; align-items:center; gap:16px; margin:12px 0 16px; }
+.search {
+  flex:1; display:flex; align-items:center; gap:10px;
+  background:#f3f4f6; border:1px solid #e7e9ee; padding:10px 14px; border-radius:14px; color:var(--muted);
+}
+.mi { font-family:"Material Icons"; font-size:20px; }
+.search input { flex:1; border:0; outline:0; background:transparent; color:var(--ink); font-size:14px; }
+
+/* Button */
+.btn { appearance:none; border:0; padding:10px 14px; border-radius:12px; font-weight:600; cursor:pointer; }
+.btn.primary { background:#1677ff; color:#fff; }
+.btn.primary:hover { filter:brightness(.95); }
+
+/* Table */
+.table-wrap { background:var(--card); border:1px solid var(--line); border-radius:14px; overflow:hidden; }
+.table { width:100%; border-collapse:separate; border-spacing:0; }
+.table thead th {
+  text-align:left; padding:14px 16px; font-weight:600; color:var(--muted);
+  background:#fbfbfc; border-bottom:1px solid var(--line);
+}
+.table tbody td { padding:16px; border-bottom:1px solid #eef0f3; }
+.table tbody tr:nth-child(odd) { background:#fff; }
+.table tbody tr:nth-child(even) { background:#fafafa; }
+.th-actions, .actions { text-align:right; padding-right:18px; }
+
+/* Actions */
+.action-link { color:#1f2937; font-weight:600; text-decoration:none; cursor:pointer; }
+.action-link:hover { text-decoration:underline; }
